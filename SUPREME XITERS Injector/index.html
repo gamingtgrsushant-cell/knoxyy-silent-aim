@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knoxyy Silent Aim - Unlimited Auth & License Manager</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); rounded: 4px; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen p-4 md:p-8">
+  <div class="max-w-6xl mx-auto space-y-6">
+    
+    <!-- Header Banner -->
+    <header class="flex flex-col md:flex-row items-start md:items-center justify-between bg-slate-900 border border-slate-800 rounded-3xl p-6 gap-4 shadow-xl">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center font-black text-2xl text-white shadow-lg shadow-indigo-500/20">
+          KS
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-extrabold text-2xl tracking-tight text-white">Knoxyy Silent Aim</h1>
+            <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">v2.0 Web Engine</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">Unlimited License Key & Custom User/Password Generator Engine</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-pulse"></span> Patented by Knoxyy
+        </span>
+        <button onclick="exportDB()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3.5 py-2 rounded-xl border border-slate-700 transition-colors">
+          💾 Export DB
+        </button>
+        <button onclick="importDB()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3.5 py-2 rounded-xl border border-slate-700 transition-colors">
+          📂 Import DB
+        </button>
+        <input type="file" id="importFileInput" onchange="handleFileImport(event)" class="hidden">
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="flex border-b border-slate-800 gap-8 px-2 overflow-x-auto">
+      <button id="tabAuthBtn" onclick="showTab('auth')" class="pb-3 text-sm font-bold border-b-2 border-indigo-500 text-indigo-400 flex items-center gap-2">
+        <span>🔐 Login & Verification</span>
+      </button>
+      <button id="tabGenBtn" onclick="showTab('gen')" class="pb-3 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-2">
+        <span>⚡ Bulk Key Generator</span>
+      </button>
+      <button id="tabUserBtn" onclick="showTab('users')" class="pb-3 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-2">
+        <span>👥 User/Password Database (<span id="userCountBadge">3</span>)</span>
+      </button>
+      <button id="tabKeyListBtn" onclick="showTab('keys')" class="pb-3 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-2">
+        <span>🔑 Keys Database (<span id="keyCountBadge">0</span>)</span>
+      </button>
+      <button id="tabPatentBtn" onclick="showTab('patent')" class="pb-3 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-2 ml-auto">
+        <span>📜 Patent & Copyright</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: LOGIN & VERIFICATION -->
+    <div id="sectionAuth" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-white">Authentication Tester</h2>
+          <p class="text-xs text-slate-400">Test login using any generated Key or custom Username/Password.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- User / Pass Login -->
+          <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="font-bold text-sm text-indigo-400">User / Pass Login</h3>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Username</label>
+              <input type="text" id="testUser" placeholder="knoxyy" value="knoxyy" class="w-full bg-slate-900 border border-slate-800 text-sm rounded-xl p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Password</label>
+              <input type="password" id="testPass" placeholder="1234" value="1234" class="w-full bg-slate-900 border border-slate-800 text-sm rounded-xl p-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <button onclick="verifyUserPass()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-md shadow-indigo-500/20">
+              Verify Credentials
+            </button>
+          </div>
+
+          <!-- Key Login -->
+          <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="font-bold text-sm text-purple-400">License Key Login</h3>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">License Key</label>
+              <input type="text" id="testKey" placeholder="KNOXYY-XXXX-XXXX" class="w-full bg-slate-900 border border-slate-800 text-sm rounded-xl p-3 text-white font-mono focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <button onclick="verifyKeyLogin()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold text-xs py-3 rounded-xl transition-all shadow-md shadow-purple-500/20">
+              Verify License Key
+            </button>
+          </div>
+        </div>
+
+        <div id="authResult" class="hidden p-4 rounded-2xl border text-xs leading-relaxed"></div>
+      </div>
+
+      <!-- Quick Info Sidebar -->
+      <div class="space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+          <h3 class="font-bold text-sm text-white">Injectable Binary Status</h3>
+          <div class="space-y-2 text-xs">
+            <div class="flex justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+              <span class="text-slate-400">App File</span>
+              <span class="font-mono text-indigo-400">Knoxyy Silent Aim Injector.exe</span>
+            </div>
+            <div class="flex justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+              <span class="text-slate-400">DirectX Driver</span>
+              <span class="font-mono text-emerald-400">D3DCOMPILER_43.dll</span>
+            </div>
+            <div class="flex justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+              <span class="text-slate-400">Status</span>
+              <span class="text-emerald-400 font-bold">Patented & Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: BULK KEY GENERATOR -->
+    <div id="sectionGen" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-white">Unlimited Bulk Key Generator</h2>
+        <p class="text-xs text-slate-400">Generate any number of license keys instantly for your users.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Key Prefix</label>
+          <input type="text" id="genPrefix" value="KNOXYY" class="w-full bg-slate-950 border border-slate-800 text-xs rounded-xl p-3 text-white font-mono">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Duration</label>
+          <select id="genDuration" class="w-full bg-slate-950 border border-slate-800 text-xs rounded-xl p-3 text-white">
+            <option value="1 Day">1 Day</option>
+            <option value="7 Days">7 Days</option>
+            <option value="30 Days" selected>30 Days (VIP)</option>
+            <option value="Lifetime">Lifetime Unlimited</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Quantity</label>
+          <input type="number" id="genCount" value="10" min="1" max="500" class="w-full bg-slate-950 border border-slate-800 text-xs rounded-xl p-3 text-white">
+        </div>
+        <div class="flex items-end">
+          <button onclick="generateBulkKeys()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs py-3 rounded-xl shadow-lg transition-all">
+            ⚡ Generate Keys Now
+          </button>
+        </div>
+      </div>
+
+      <div id="genResultContainer" class="hidden space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-emerald-400">Generated Keys Output:</span>
+          <button onclick="copyGeneratedKeys()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-lg border border-slate-700">
+            Copy All to Clipboard
+          </button>
+        </div>
+        <textarea id="genResultArea" rows="6" readonly class="w-full bg-slate-950 border border-slate-800 text-xs font-mono p-4 rounded-2xl text-emerald-400 focus:outline-none"></textarea>
+      </div>
+    </div>
+
+    <!-- TAB 3: USER & PASSWORD DATABASE -->
+    <div id="sectionUsers" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-white">Custom User & Password Manager</h2>
+          <p class="text-xs text-slate-400">Add, edit, or remove custom user accounts for Knoxyy Silent Aim.</p>
+        </div>
+      </div>
+
+      <!-- Add User Form -->
+      <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <input type="text" id="addUsername" placeholder="Username (e.g. knoxyy_user)" class="bg-slate-900 border border-slate-800 text-xs rounded-xl p-3 text-white">
+        <input type="text" id="addPassword" placeholder="Password (e.g. secret123)" class="bg-slate-900 border border-slate-800 text-xs rounded-xl p-3 text-white">
+        <button onclick="addNewUser()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-3 rounded-xl transition-colors">
+          + Add Custom User
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider">
+              <th class="pb-3 px-4">Username</th>
+              <th class="pb-3 px-4">Password</th>
+              <th class="pb-3 px-4">Role</th>
+              <th class="pb-3 px-4 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody" class="divide-y divide-slate-800/50"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 4: KEYS DATABASE -->
+    <div id="sectionKeys" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-white">Active License Keys Database</h2>
+          <p class="text-xs text-slate-400">List of all generated keys stored in database.</p>
+        </div>
+        <button onclick="clearAllKeys()" class="text-xs text-red-400 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-xl border border-red-500/20">
+          Clear All Keys
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider">
+              <th class="pb-3 px-4">License Key</th>
+              <th class="pb-3 px-4">Duration</th>
+              <th class="pb-3 px-4">Status</th>
+              <th class="pb-3 px-4 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="keyTableBody" class="divide-y divide-slate-800/50"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 5: PATENT & COPYRIGHT NOTICE -->
+    <div id="sectionPatent" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <h2 class="text-2xl font-black text-white">Patent & Intellectual Property Notice</h2>
+        <p class="text-xs text-indigo-400 font-mono mt-1">Registered under Author Name: Knoxyy</p>
+      </div>
+
+      <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4 text-xs leading-relaxed text-slate-300">
+        <div class="flex items-center gap-3 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-300">
+          <span class="text-lg">📜</span>
+          <div>
+            <strong>Official Patent Attribution:</strong>
+            <div>This software, key engine, and custom injector framework is authored and patented by <strong>Knoxyy</strong>.</div>
+          </div>
+        </div>
+
+        <h3 class="font-bold text-white text-sm">Terms of Copyright & Licensing</h3>
+        <p>Copyright &copy; 2026 <strong>Knoxyy</strong>. All rights reserved.</p>
+        <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Knoxyy Silent Aim Engine"), to use, copy, modify, merge, publish, and distribute copies of the Software for personal and educational purposes, subject to attribution to <strong>Knoxyy</strong>.</p>
+        
+        <div class="pt-4 border-t border-slate-800 font-mono text-[11px] text-slate-400">
+          <div>PATENT_ID: KNOXYY-SA-2026-PATENT-8849</div>
+          <div>AUTHOR: Knoxyy</div>
+          <div>PROJECT: Knoxyy Silent Aim Injector</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let appState = JSON.parse(localStorage.getItem('knoxyy_auth_app')) || {
+      users: {
+        "knoxyy": { pass: "1234", role: "Owner" },
+        "admin": { pass: "admin", role: "Admin" },
+        "vip_user": { pass: "pass123", role: "VIP User" }
+      },
+      keys: []
+    };
+
+    function saveState() {
+      localStorage.setItem('knoxyy_auth_app', JSON.stringify(appState));
+      updateBadges();
+      renderUsers();
+      renderKeys();
+    }
+
+    function updateBadges() {
+      document.getElementById('userCountBadge').innerText = Object.keys(appState.users).length;
+      document.getElementById('keyCountBadge').innerText = appState.keys.length;
+    }
+
+    function showTab(tab) {
+      ['Auth', 'Gen', 'Users', 'Keys', 'Patent'].forEach(t => {
+        document.getElementById('section' + t).classList.add('hidden');
+        document.getElementById('tab' + t + 'Btn').className = 'pb-3 text-sm font-medium text-slate-400 border-b-2 border-transparent hover:text-slate-200 flex items-center gap-2';
+      });
+
+      const activeBtn = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Btn');
+      if (activeBtn) {
+        activeBtn.className = 'pb-3 text-sm font-bold border-b-2 border-indigo-500 text-indigo-400 flex items-center gap-2';
+      }
+      document.getElementById('section' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
+    }
+
+    function verifyUserPass() {
+      const u = document.getElementById('testUser').value.trim();
+      const p = document.getElementById('testPass').value.trim();
+      const res = document.getElementById('authResult');
+
+      if (appState.users[u] && appState.users[u].pass === p) {
+        res.className = 'p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-medium block';
+        res.innerHTML = `✅ <strong>Authentication Granted!</strong> Welcome <strong>${u}</strong> (Role: ${appState.users[u].role}). Knoxyy Silent Aim Injector access granted.`;
+      } else {
+        res.className = 'p-4 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-medium block';
+        res.innerHTML = `❌ <strong>Access Denied!</strong> Invalid Username or Password. Add user in User Database tab.`;
+      }
+    }
+
+    function verifyKeyLogin() {
+      const k = document.getElementById('testKey').value.trim();
+      const res = document.getElementById('authResult');
+      const found = appState.keys.find(x => x.key === k);
+
+      if (found) {
+        res.className = 'p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-medium block';
+        res.innerHTML = `✅ <strong>License Key Valid!</strong> Key: <span class="font-mono">${k}</span> | Duration: ${found.duration} | Author: Knoxyy`;
+      } else {
+        res.className = 'p-4 rounded-2xl border border-red-500/30 bg-red-500/10 text-red-400 text-xs font-medium block';
+        res.innerHTML = `❌ <strong>Invalid Key!</strong> Key not found in Database. Generate keys in Bulk Generator tab.`;
+      }
+    }
+
+    function generateBulkKeys() {
+      const prefix = document.getElementById('genPrefix').value.trim() || 'KNOXYY';
+      const duration = document.getElementById('genDuration').value;
+      const count = parseInt(document.getElementById('genCount').value) || 1;
+
+      const newKeys = [];
+      for (let i = 0; i < count; i++) {
+        const rand = () => Math.random().toString(16).substring(2, 6).toUpperCase();
+        const keyStr = `${prefix}-${rand()}-${rand()}-${rand()}`;
+        const keyObj = { key: keyStr, duration: duration, status: 'Active', created: new Date().toLocaleDateString() };
+        appState.keys.push(keyObj);
+        newKeys.push(keyStr);
+      }
+
+      saveState();
+
+      document.getElementById('genResultArea').value = newKeys.join('\n');
+      document.getElementById('genResultContainer').classList.remove('hidden');
+    }
+
+    function copyGeneratedKeys() {
+      const area = document.getElementById('genResultArea');
+      navigator.clipboard.writeText(area.value);
+      alert('All generated keys copied to clipboard!');
+    }
+
+    function renderUsers() {
+      const tbody = document.getElementById('userTableBody');
+      tbody.innerHTML = '';
+      Object.keys(appState.users).forEach(u => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-800/30">
+            <td class="py-3 px-4 font-bold text-indigo-400">${u}</td>
+            <td class="py-3 px-4 font-mono text-slate-300">${appState.users[u].pass}</td>
+            <td class="py-3 px-4"><span class="bg-indigo-500/10 text-indigo-400 text-[10px] px-2 py-0.5 rounded-full border border-indigo-500/20">${appState.users[u].role}</span></td>
+            <td class="py-3 px-4 text-right">
+              <button onclick="removeUser('${u}')" class="text-red-400 hover:text-red-300 font-bold px-2 py-1">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function addNewUser() {
+      const u = document.getElementById('addUsername').value.trim();
+      const p = document.getElementById('addPassword').value.trim();
+      if (!u || !p) {
+        alert('Enter both username and password!');
+        return;
+      }
+      appState.users[u] = { pass: p, role: "Custom User" };
+      document.getElementById('addUsername').value = '';
+      document.getElementById('addPassword').value = '';
+      saveState();
+      alert(`User "${u}" added to database!`);
+    }
+
+    function removeUser(u) {
+      delete appState.users[u];
+      saveState();
+    }
+
+    function renderKeys() {
+      const tbody = document.getElementById('keyTableBody');
+      tbody.innerHTML = '';
+      appState.keys.forEach((k, idx) => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-800/30 font-mono">
+            <td class="py-3 px-4 text-purple-300 font-bold">${k.key}</td>
+            <td class="py-3 px-4 text-slate-400">${k.duration}</td>
+            <td class="py-3 px-4"><span class="bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/20">${k.status}</span></td>
+            <td class="py-3 px-4 text-right">
+              <button onclick="removeKey(${idx})" class="text-red-400 hover:text-red-300 font-bold px-2 py-1 font-sans">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function removeKey(idx) {
+      appState.keys.splice(idx, 1);
+      saveState();
+    }
+
+    function clearAllKeys() {
+      if (confirm('Clear all generated keys from database?')) {
+        appState.keys = [];
+        saveState();
+      }
+    }
+
+    function exportDB() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "knoxyy_auth_db.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importDB() {
+      document.getElementById('importFileInput').click();
+    }
+
+    function handleFileImport(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (imported.users) {
+            appState = imported;
+            saveState();
+            alert('Database imported successfully!');
+          }
+        } catch(err) {
+          alert('Invalid JSON file!');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    saveState();
+  </script>
+</body>
+</html>
